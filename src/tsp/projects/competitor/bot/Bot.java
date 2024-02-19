@@ -30,13 +30,13 @@ public class Bot extends CompetitorProject {
     public void loop() {
         // Boucle principale de votre algorithme ici
         long startTime = System.currentTimeMillis(); // Temps de départ de la boucle
-        while (System.currentTimeMillis() - startTime < 60000) { // Boucle pendant moins de 60 secondes
-            // Construction gloutonne stochastique d'une solution initiale
-            Path meilleureSolution = GRASP();
 
-            // Mettre à jour la meilleure solution si nécessaire
-            evaluation.evaluate(meilleureSolution);
-        }
+        // Construction gloutonne stochastique d'une solution initiale
+        Path meilleureSolution = GRASP();
+
+        // Mettre à jour la meilleure solution si nécessaire
+        evaluation.evaluate(meilleureSolution);
+    
     }
 
     private Path GRASP() {
