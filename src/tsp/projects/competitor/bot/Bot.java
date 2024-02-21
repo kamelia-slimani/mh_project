@@ -7,16 +7,21 @@ import tsp.projects.CompetitorProject;
 import tsp.projects.InvalidProjectException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class Bot extends CompetitorProject {
     protected Evaluation evaluation;
     protected Problem problem;
+    private double mutationRate = 0.1; // Taux de mutation
+    private Map<Path, Double> fitnessMap; // Map pour stocker la fitness de chaque chemin
 
     public Bot(Evaluation evaluation) throws InvalidProjectException {
         super(evaluation);
         setMethodName("Bot");
         setAuthors("Alexandre", "Kamelia");
+        fitnessMap = new HashMap<>(); // Initialisation de la Map
     }
 
     @Override
@@ -31,79 +36,115 @@ public class Bot extends CompetitorProject {
         // Boucle principale de votre algorithme ici
         long startTime = System.currentTimeMillis(); // Temps de départ de la boucle
 
-        // Construction gloutonne stochastique d'une solution initiale
-        Path meilleureSolution = GRASP();
+        // Création de la population initiale
+        ArrayList<Path> population = createInitialPopulation(100); // Nombre de chemins dans la population initiale
+
+        // Boucle principale de l'algorithme génétique
+        for (int generation = 0; generation < 1000; generation++) { // Nombre maximal de générations
+            // Évaluation de la population
+            evaluatePopulation(population);
+
+            // Sélection des parents
+            ArrayList<Path> parents = selectParents(population);
+
+            // Croisement des parents pour créer de nouveaux enfants
+            ArrayList<Path> enfants = crossover(parents);
+
+            // Mutation des enfants
+            mutate(enfants);
+
+            // Remplacement de la population par les enfants
+            population = enfants;
+        }
+
+        // Sélection de la meilleure solution de la population finale
+        Path meilleureSolution = selectBestSolution(population);
 
         // Mettre à jour la meilleure solution si nécessaire
         evaluation.evaluate(meilleureSolution);
-    
     }
 
-    private Path GRASP() {
-        Path meilleureSolution = null;
-        double meilleureEvaluation = Double.MAX_VALUE;
-        int nombreIterations = 10; // Nombre d'itérations de l'algorithme GRASP
+    private ArrayList<Path> createInitialPopulation(int populationSize) {
+        ArrayList<Path> population = new ArrayList<>();
+        for (int i = 0; i < populationSize; i++) {
+            int[] chemin = generateRandomPath();
+            population.add(new Path(chemin));
+        }
+        return population;
+    }
 
-        // Répéter l'algorithme GRASP avec plusieurs points de départ
-        for (int i = 0; i < nombreIterations; i++) {
-            // Initialisation : liste des villes non visitées
-            ArrayList<Integer> villesNonVisitees = new ArrayList<>();
-            for (int j = 0; j < evaluation.getProblem().getLength(); j++) {
-                villesNonVisitees.add(j);
-            }
+    private int[] generateRandomPath() {
+        int[] chemin = new int[evaluation.getProblem().getLength()];
+        for (int i = 0; i < chemin.length; i++) {
+            chemin[i] = i;
+        }
+        shuffleArray(chemin);
+        return chemin;
+    }
 
-            // Sélection aléatoire du point de départ
-            int villeDepart = choisirVilleAleatoire(villesNonVisitees);
-            int[] chemin = new int[evaluation.getProblem().getLength()];
-            chemin[0] = villeDepart; // Première ville du chemin
-            villesNonVisitees.remove(Integer.valueOf(villeDepart));
+    private void shuffleArray(int[] array) {
+        Random random = new Random();
+        for (int i = array.length - 1; i > 0; i--) {
+            int index = random.nextInt(i + 1);
+            int temp = array[index];
+            array[index] = array[i];
+            array[i] = temp;
+        }
+    }
 
-            // Construction de la solution par un algorithme glouton stochastique
-            for (int k = 1; k < evaluation.getProblem().getLength(); k++) {
-                // Établir une liste restreinte de villes candidates
-                ArrayList<Integer> RCL = construireRCL(villeDepart, villesNonVisitees);
+    private ArrayList<Path> selectParents(ArrayList<Path> population) {
+        // Sélectionnez simplement deux chemins aléatoires de la population comme parents
+        ArrayList<Path> parents = new ArrayList<>();
+        Random random = new Random();
+        parents.add(population.get(random.nextInt(population.size())));
+        parents.add(population.get(random.nextInt(population.size())));
+        return parents;
+    }
 
-                // Sélection aléatoire dans la liste restreinte
-                int prochaineVille = choisirVilleAleatoire(RCL);
-                chemin[k] = prochaineVille;
-                villesNonVisitees.remove(Integer.valueOf(prochaineVille));
+    private ArrayList<Path> crossover(ArrayList<Path> parents) {
+        // Implémentez le croisement des chemins pour créer de nouveaux enfants (par exemple, à deux points de coupure)
+        // Pour cette implémentation simplifiée, je vais simplement retourner les parents sans croisement
+        return parents;
+    }
 
-                // Mettre à jour la ville de départ pour la prochaine itération
-                villeDepart = prochaineVille;
-            }
-
-            // Création de l'objet Path avec le chemin construit
-            Path solution = new Path(chemin);
-
-            // Application de Hill Climbing
-            solution = hillClimbing(solution);
-
-            // Mettre à jour la meilleure solution trouvée
-            double evaluationActuelle = evaluation.evaluate(solution);
-            if (evaluationActuelle < meilleureEvaluation) {
-                meilleureSolution = solution;
-                meilleureEvaluation = evaluationActuelle;
+    private void mutate(ArrayList<Path> enfants) {
+        // Pour cette implémentation simplifiée, je vais juste appliquer une mutation aléatoire à chaque enfant
+        Random random = new Random();
+        for (Path enfant : enfants) {
+            if (random.nextDouble() < mutationRate) {
+                // Appliquer une mutation au hasard au chemin de l'enfant
+                mutatePath(enfant);
             }
         }
-
-        return meilleureSolution;
     }
 
-    private int choisirVilleAleatoire(ArrayList<Integer> villes) {
+    private void mutatePath(Path path) {
+        // Implémentez la logique de mutation (par exemple, échangez deux villes aléatoires dans le chemin)
+        // Pour cette implémentation simplifiée, je vais simplement mélanger le chemin
         Random random = new Random();
-        return villes.get(random.nextInt(villes.size()));
+        int[] pathArray = path.getPath();
+        shuffleArray(pathArray);
     }
 
-    private ArrayList<Integer> construireRCL(int villeDepart, ArrayList<Integer> villesNonVisitees) {
-        // Implémenter la construction de la liste restreinte de candidats (RCL)
-        // Vous pouvez utiliser une méthode de sélection basée sur une certaine heuristique
-        // Par exemple, la probabilité inversement proportionnelle à la distance
-        return villesNonVisitees;
+    private void evaluatePopulation(ArrayList<Path> population) {
+        // Évaluez la fitness de chaque chemin dans la population
+        for (Path path : population) {
+            double fitness = evaluation.evaluate(path);
+            // Stocker la fitness dans la Map
+            fitnessMap.put(path, fitness);
+        }
     }
 
-    private Path hillClimbing(Path solutionInitiale) {
-        // Implémenter l'algorithme de Hill Climbing pour améliorer la solution initiale
-        // Retourner la meilleure solution trouvée
-        return solutionInitiale;
+    private Path selectBestSolution(ArrayList<Path> population) {
+        // Sélectionnez simplement le meilleur chemin de la population en fonction de la fitness
+        Path bestSolution = population.get(0);
+        for (Path path : population) {
+            // Utilisez la fitness stockée dans la Map
+            double fitness = fitnessMap.get(path);
+            if (fitness < evaluation.evaluate(bestSolution)) {
+                bestSolution = path;
+            }
+        }
+        return bestSolution;
     }
 }
