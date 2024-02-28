@@ -12,7 +12,7 @@ public class Genetic extends CompetitorProject
 {
     private int length;
     private Random random;
-    private int N = 50;
+    private int N = 20;
     private final double MUTATION = 0.5;
 
     ArrayList<Path> population = new ArrayList<Path>();
@@ -63,17 +63,13 @@ public class Genetic extends CompetitorProject
         this.length = this.problem.getLength ();
 
         Path path;
-        for (int i = 0; i < 2*this.N/3  ; i++)
+        for (int i = 0; i < this.N  ; i++)
         {
             path = two_opt(HillClimbing(this.length));
             this.population.add(path);
         }
 
-        for (int i = 2*this.N/3; i < this.N  ; i++)
-        {
-            path = two_opt(new Path(this.length));
-            this.population.add(path);
-        }
+
         this.sortList();
     }
 
@@ -148,8 +144,8 @@ public class Genetic extends CompetitorProject
                 Coordinates i2 = this.problem.getCoordinates(S.getPath()[l]);
                 Coordinates i3 = this.problem.getCoordinates(S.getPath()[k]);
 
-                int n = k + 1;
-                for (int j = 0; j < length - 3; j++)
+                int n = k;
+                for (int j = 0; j < length - 4; j++)
                 {
                     if (n >= length) n = 0;
 
@@ -191,7 +187,7 @@ public class Genetic extends CompetitorProject
     @Override
     public void loop ()
     {
-        for (int i = this.N/10; i < this.N ; i++)
+        for (int i = this.N/4; i < this.N - 1; i++)
         {
             int index1 = random.nextInt(this.N/2);
             int index2;
@@ -202,15 +198,19 @@ public class Genetic extends CompetitorProject
             Path path1 = population.get(index1);
             Path path2 = population.get(index2);
             int rand = random.nextInt(this.length);
-            Path pathc = two_opt(Children(path1,path2,rand));
+            Path pathc = Children(path1,path2,rand);
 
             if (random.nextDouble(1) < this.MUTATION)
             {
-                pathc = new_opt(pathc);
+                MutationShift(pathc);
+                MutationEchange(pathc);
             }
+            pathc = new_opt(two_opt(pathc));
 
             this.population.set(i,pathc);
         }
+
+        this.population.set(this.N - 1, two_opt(HillClimbing(this.length)));
         this.sortList();
     }
 
