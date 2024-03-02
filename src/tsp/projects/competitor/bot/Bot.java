@@ -1,5 +1,6 @@
 package tsp.projects.competitor.bot;
 
+import tsp.evaluation.Coordinates;
 import tsp.evaluation.Evaluation;
 import tsp.evaluation.Path;
 import tsp.evaluation.Problem;
@@ -7,28 +8,38 @@ import tsp.projects.CompetitorProject;
 import tsp.projects.InvalidProjectException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Random;
 
 public class Bot extends CompetitorProject {
     protected Evaluation evaluation;
     protected Problem problem;
     private double mutationRate = 0.1; // Taux de mutation
-    private Map<Path, Double> fitnessMap; // Map pour stocker la fitness de chaque chemin
+    private AntColony antColony; // Instance de l'ACO
+    private int numAnts = 100; // Nombre de fourmis
+    private int numIterations = 10000; // Nombre d'itérations de l'ACO
+    private List<Coordinates> coordinates; // Liste des coordonnées des villes
 
     public Bot(Evaluation evaluation) throws InvalidProjectException {
         super(evaluation);
         setMethodName("Bot");
         setAuthors("Alexandre", "Kamelia");
-        fitnessMap = new HashMap<>(); // Initialisation de la Map
     }
 
     @Override
     public void initialization() {
-        // Initialisation de votre algorithme ici
         this.evaluation = super.evaluation;
         this.problem = super.problem;
+        this.coordinates = initializeCitiesWithCoordinates(this.problem); // Initialiser les coordonnées des villes
+        this.antColony = new AntColony(numAnts, coordinates, 0.5, 1.0, 1.0, 2.0); // Initialiser l'instance de l'ACO
+    }
+
+    private List<Coordinates> initializeCitiesWithCoordinates(Problem problem) {
+        List<Coordinates> coordinates = new ArrayList<>();
+        for (int i = 0; i < problem.getLength(); i++) {
+            coordinates.add(problem.getCoordinates(i));
+        }
+        return coordinates;
     }
 
     @Override
@@ -36,26 +47,21 @@ public class Bot extends CompetitorProject {
         // Boucle principale de votre algorithme ici
         long startTime = System.currentTimeMillis(); // Temps de départ de la boucle
 
-        // Création de la population initiale
+        // Création de la population initiale à l'aide de l'algorithme génétique
         ArrayList<Path> population = createInitialPopulation(100); // Nombre de chemins dans la population initiale
 
-        // Boucle principale de l'algorithme génétique
-        for (int generation = 0; generation < 1000; generation++) { // Nombre maximal de générations
-            // Évaluation de la population
-            evaluatePopulation(population);
+        // Conversion de la liste de coordonnées en tableau de coordonnées
+        Coordinates[] coordinatesArray = coordinates.toArray(new Coordinates[coordinates.size()]);
 
-            // Sélection des parents
-            ArrayList<Path> parents = selectParents(population);
-
-            // Croisement des parents pour créer de nouveaux enfants
-            ArrayList<Path> enfants = crossover(parents);
-
-            // Mutation des enfants
-            mutate(enfants);
-
-            // Remplacement de la population par les enfants
-            population = enfants;
+        // Optimisation de la population avec l'algorithme 2-opt
+        for (int i = 0; i < population.size(); i++) {
+            Path path = population.get(i);
+            Path optimizedPath = TwoOpt.optimize(path, coordinatesArray);
+            population.set(i, optimizedPath); // Mettre à jour le chemin dans la population
         }
+
+        // Optimisation de la population avec l'algorithme des colonies de fourmis
+        //population = antColony.runAntColonyOptimization(population, numIterations);
 
         // Sélection de la meilleure solution de la population finale
         Path meilleureSolution = selectBestSolution(population);
@@ -63,6 +69,8 @@ public class Bot extends CompetitorProject {
         // Mettre à jour la meilleure solution si nécessaire
         evaluation.evaluate(meilleureSolution);
     }
+
+
 
     private ArrayList<Path> createInitialPopulation(int populationSize) {
         ArrayList<Path> population = new ArrayList<>();
@@ -92,56 +100,14 @@ public class Bot extends CompetitorProject {
         }
     }
 
-    private ArrayList<Path> selectParents(ArrayList<Path> population) {
-        // Sélectionnez simplement deux chemins aléatoires de la population comme parents
-        ArrayList<Path> parents = new ArrayList<>();
-        Random random = new Random();
-        parents.add(population.get(random.nextInt(population.size())));
-        parents.add(population.get(random.nextInt(population.size())));
-        return parents;
-    }
-
-    private ArrayList<Path> crossover(ArrayList<Path> parents) {
-        // Implémentez le croisement des chemins pour créer de nouveaux enfants (par exemple, à deux points de coupure)
-        // Pour cette implémentation simplifiée, je vais simplement retourner les parents sans croisement
-        return parents;
-    }
-
-    private void mutate(ArrayList<Path> enfants) {
-        // Pour cette implémentation simplifiée, je vais juste appliquer une mutation aléatoire à chaque enfant
-        Random random = new Random();
-        for (Path enfant : enfants) {
-            if (random.nextDouble() < mutationRate) {
-                // Appliquer une mutation au hasard au chemin de l'enfant
-                mutatePath(enfant);
-            }
-        }
-    }
-
-    private void mutatePath(Path path) {
-        // Implémentez la logique de mutation (par exemple, échangez deux villes aléatoires dans le chemin)
-        // Pour cette implémentation simplifiée, je vais simplement mélanger le chemin
-        Random random = new Random();
-        int[] pathArray = path.getPath();
-        shuffleArray(pathArray);
-    }
-
-    private void evaluatePopulation(ArrayList<Path> population) {
-        // Évaluez la fitness de chaque chemin dans la population
-        for (Path path : population) {
-            double fitness = evaluation.evaluate(path);
-            // Stocker la fitness dans la Map
-            fitnessMap.put(path, fitness);
-        }
-    }
-
     private Path selectBestSolution(ArrayList<Path> population) {
         // Sélectionnez simplement le meilleur chemin de la population en fonction de la fitness
         Path bestSolution = population.get(0);
+        double bestFitness = evaluation.evaluate(bestSolution);
         for (Path path : population) {
-            // Utilisez la fitness stockée dans la Map
-            double fitness = fitnessMap.get(path);
-            if (fitness < evaluation.evaluate(bestSolution)) {
+            double fitness = evaluation.evaluate(path);
+            if (fitness < bestFitness) {
+                bestFitness = fitness;
                 bestSolution = path;
             }
         }
