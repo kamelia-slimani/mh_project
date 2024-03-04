@@ -42,8 +42,8 @@ public final class Main extends OutputWriter
 //	private static final int NB_RUNS = 10;
 	private static final int NB_RUNS = 1;
 	private static final int NB_SECONDS = 60;
-//	static final boolean DISPLAY_CHART = true;
-    static final boolean DISPLAY_CHART = false;
+	static final boolean DISPLAY_CHART = true;
+//  static final boolean DISPLAY_CHART = false;
 //	static final boolean DISPLAY_STD_OUT = true;
 	static final boolean DISPLAY_STD_OUT = false;
 //	static final boolean COMPETITION = true;
