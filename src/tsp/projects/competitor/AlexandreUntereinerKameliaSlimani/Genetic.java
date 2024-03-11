@@ -1,4 +1,4 @@
-package tsp.projects.competitor.bot;
+package tsp.projects.competitor.AlexandreUntereinerKameliaSlimani;
 
 import tsp.evaluation.Coordinates;
 import tsp.evaluation.Evaluation;
@@ -8,23 +8,37 @@ import tsp.projects.InvalidProjectException;
 
 import java.util.*;
 
+/**
+ * Implémentation d'un algorithme génétique pour résoudre le problème du voyageur de commerce.
+ */
 public class Genetic extends CompetitorProject
 {
-    private int length;
-    private Random random;
-    private int N = 20;
-    private final double MUTATION = 0.5;
+    private int length; // Longueur du problème
+    private Random random; // Générateur de nombres aléatoires
+    private int N = 20; // Taille de la population
+    private final double MUTATION = 0.5; // Taux de mutation
 
-    ArrayList<Path> population = new ArrayList<Path>();
+    ArrayList<Path> population = new ArrayList<Path>(); // Population de chemins
 
+    /**
+     * Constructeur de la classe Genetic.
+     *
+     * @param evaluation L'instance de l'évaluation
+     * @throws InvalidProjectException Si le projet est invalide
+     */
     public Genetic(Evaluation evaluation) throws InvalidProjectException {
         super(evaluation);
         setMethodName("GENETIC");
-        setAuthors("Alexandre", "Kamelia");
+        setAuthors("Alexandre Untereiner", "Kamelia Slimani");
     }
 
-
-    public Path HillClimbing(int length)
+    /**
+     * Implémente l'algorithme glouton pour générer un chemin initial.
+     *
+     * @param length Longueur du chemin
+     * @return Le chemin généré
+     */
+    public Path Greedy(int length)
     {
         int [] path = new int [length];
         boolean [] used = new boolean [length];
@@ -65,30 +79,24 @@ public class Genetic extends CompetitorProject
         Path path;
         for (int i = 0; i < this.N  ; i++)
         {
-            path = two_opt(HillClimbing(this.length));
+            path = two_opt(Greedy(this.length));
             this.population.add(path);
         }
-
-
         this.sortList();
     }
 
     Path two_opt(Path P) {
         Path S = new Path(P);
+        boolean amelioration = true;
 
-        boolean ameliorable = true;
-
-        while (ameliorable)
+        while (amelioration)
         for (int i = 0; i < length; i++)
         {
-            ameliorable = false;
+            amelioration = false;
             Coordinates i1 = this.problem.getCoordinates(S.getPath()[i]);
-            int l = i + 1;
 
-            if (l == length)
-            {
-                l = 0;
-            }
+            int l = i + 1;
+            if (l == length) l = 0;
 
             Coordinates i2 = this.problem.getCoordinates(S.getPath()[l]);
 
@@ -98,47 +106,38 @@ public class Genetic extends CompetitorProject
                 if (n >= length) n = 0;
 
                 int m = n + 1;
-
                 if (m >= length) m = 0;
 
                 Coordinates j1 = this.problem.getCoordinates(S.getPath()[n]);
                 Coordinates j2 = this.problem.getCoordinates(S.getPath()[m]);
 
-                double dist1 = i1.distance(i2);
-                double dist2 = j1.distance(j2);
-                double dist3 = i2.distance(j2);
-                double dist4 = i1.distance(j1);
-
-                if ((dist1 + dist2) > (dist3 + dist4))
+                if ((i1.distance(i2) + j1.distance(j2)) > (i2.distance(j2) + i1.distance(j1)))
                 {
-                    ameliorable = true;
-                    invercePath(S, l ,n );
+                    amelioration = true;
+                    inversePath(S, l ,n );
                     i2 = this.problem.getCoordinates(S.getPath()[l]);
                 }
-
-                n = n + 1;
+                n ++;
             }
         }
         return S;
     }
 
-    Path new_opt(Path P) {
+    Path one_opt(Path P) {
         Path S = new Path(P);
         int max = 0;
-        boolean ameliorable = true;
+        boolean amelioration = true;
 
-        while (ameliorable && max < length)
+        while (amelioration && max < length)
             for (int i = 0; i < length; i++)
             {
-                ameliorable = false;
+                amelioration = false;
                 Coordinates i1 = this.problem.getCoordinates(S.getPath()[i]);
 
                 int l = i + 1;
-
                 if (l == length) l = 0;
 
                 int k = l + 1;
-
                 if (k == length) k = 0;
 
                 Coordinates i2 = this.problem.getCoordinates(S.getPath()[l]);
@@ -156,17 +155,9 @@ public class Genetic extends CompetitorProject
                     Coordinates j1 = this.problem.getCoordinates(S.getPath()[n]);
                     Coordinates j2 = this.problem.getCoordinates(S.getPath()[m]);
 
-                    double dist1 = i1.distance(i2); // i à i+1
-                    double dist2 = i2.distance(i3); // i+1 à i+2
-                    double dist3 = j1.distance(j2); // j à i+1
-
-                    double dist4 = j1.distance(i2); // j à i+1
-                    double dist5 = i2.distance(j2); // i+1 à j+1
-                    double dist6 = i1.distance(i3); // i à i+2
-
-                    if ((dist1 + dist2 + dist3) > (dist4 + dist5 + dist6))
+                    if ((i1.distance(i2) + i2.distance(i3) + j1.distance(j2)) > (j1.distance(i2) + i2.distance(j2) + i1.distance(i3)))
                     {
-                        ameliorable = true;
+                        amelioration = true;
                         shiftPath(S, l ,n );
                         i1 = this.problem.getCoordinates(S.getPath()[i]);
                         i2 = this.problem.getCoordinates(S.getPath()[l]);
@@ -187,30 +178,28 @@ public class Genetic extends CompetitorProject
     @Override
     public void loop ()
     {
-        for (int i = this.N/4; i < this.N - 1; i++)
+        for (int i = this.N/4; i < this.N ; i++)
         {
             int index1 = random.nextInt(this.N/2);
             int index2;
             do {
                 index2 =  random.nextInt(this.N/2);
             } while (index2 == index1);
-
-            Path path1 = population.get(index1);
-            Path path2 = population.get(index2);
+            
             int rand = random.nextInt(this.length);
-            Path pathc = Children(path1,path2,rand);
+            Path pathChildren = Children(population.get(index1),population.get(index2),rand);
 
-            if (random.nextDouble(1) < this.MUTATION)
+            if (random.nextDouble() < this.MUTATION)
             {
-                MutationShift(pathc);
-                MutationEchange(pathc);
+                MutationShift(pathChildren);
+                MutationChange(pathChildren);
             }
-            pathc = new_opt(two_opt(pathc));
+            pathChildren = one_opt(two_opt(pathChildren));
 
-            this.population.set(i,pathc);
+            this.population.set(i,pathChildren);
         }
 
-        this.population.set(this.N - 1, two_opt(HillClimbing(this.length)));
+        //this.population.set(this.N - 1, two_opt(Greedy(this.length)));
         this.sortList();
     }
 
@@ -239,22 +228,17 @@ public class Genetic extends CompetitorProject
         return new Path(c1);
     }
 
-    int randomIndex()
-    {
-        return random.nextInt(length);
-    }
-
     int randomIndex(int i)
     {
         int j;
         do {
-            j = randomIndex();
+            j = random.nextInt(length);
         } while (i == j);
 
         return j;
     }
 
-    void invercePath(Path P,int index1,int index2)
+    void inversePath(Path P, int index1, int index2)
     {
         int[] p = P.getPath();
         int tmp;
@@ -284,7 +268,7 @@ public class Genetic extends CompetitorProject
 
     void MutationShift(Path P)
     {
-        int index1 = randomIndex();
+        int index1 = random.nextInt(length);
         int index2 = randomIndex(index1);
         shiftPath(P,index1,index2);
     }
@@ -318,20 +302,18 @@ public class Genetic extends CompetitorProject
 
     }
 
-    void MutationInvertion(Path P)
+    void MutationInversion(Path P)
     {
-        int index1 = randomIndex();
+        int index1 = random.nextInt(length);
         int index2 = randomIndex(index1);
-        invercePath(P,index1,index2);
+        inversePath(P,index1,index2);
     }
-
-
 
     void MutationSwap(Path P)
     {
         int[] p = P.getPath();
 
-        int index1 = randomIndex();
+        int index1 = random.nextInt(length);
         int index2 = index1 + 1;
         if(index1 == length - 1)
             index2 = 0;
@@ -341,11 +323,11 @@ public class Genetic extends CompetitorProject
         p[index2] = temp;
     }
 
-    void MutationEchange(Path P)
+    void MutationChange(Path P)
     {
         int[] p = P.getPath();
 
-        int index1 = randomIndex();
+        int index1 = random.nextInt(length);
         int index2 = randomIndex(index1);
 
         int temp = p[index1];
