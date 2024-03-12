@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Implémentation d'un algorithme génétique pour résoudre le problème du voyageur de commerce.
  */
-public class Genetic extends CompetitorProject {
+public class BakiTKO extends CompetitorProject {
     private int length; // Longueur du problème
     private Random random; // Générateur de nombres aléatoires
     private int N = 20; // Taille de la population
@@ -25,7 +25,7 @@ public class Genetic extends CompetitorProject {
      * @param evaluation L'instance de l'évaluation
      * @throws InvalidProjectException Si le projet est invalide
      */
-    public Genetic(Evaluation evaluation) throws InvalidProjectException {
+    public BakiTKO(Evaluation evaluation) throws InvalidProjectException {
         super(evaluation);
         setMethodName("GENETIC");
         setAuthors("Alexandre Untereiner", "Kamelia Slimani");

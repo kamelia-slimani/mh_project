@@ -16,7 +16,8 @@ import java.util.*;
  * Elle étend la classe CompetitorProject et implémente l'algorithme de résolution du TSP.
  *//*
 
-public class CombinedACO_GA_SA extends CompetitorProject {
+
+public class DoumbeEstropier extends CompetitorProject {
 
     private int length;
     private Random random;
@@ -33,7 +34,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
     // Pistes de phéromones pour chaque paire de villes
     private double[][] pheromones;
 
-    */
+*/
 /**
      * Construit un nouvel objet CombinedACO_GA_SA avec la fonction d'évaluation spécifiée.
      *
@@ -41,16 +42,20 @@ public class CombinedACO_GA_SA extends CompetitorProject {
      * @throws InvalidProjectException Si l'initialisation du projet échoue.
      *//*
 
-    public CombinedACO_GA_SA(Evaluation evaluation) throws InvalidProjectException {
+
+    public DoumbeEstropier(Evaluation evaluation) throws InvalidProjectException {
         super(evaluation);
         setMethodName("COMBINED_ACO_GA_SA");
         setAuthors("Alexandre", "Kamelia");
     }
 
-    */
-/**
+*/
+/*
+*
      * Initialise les paramètres et les structures de données nécessaires pour l'algorithme.
-     *//*
+
+*//*
+
 
     @Override
     public void initialization() {
@@ -66,13 +71,16 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         }
     }
 
-    */
-/**
+*/
+/*
+*
      * Exécute l'algorithme principal qui combine l'ACO, le GA et le SA pour résoudre le problème TSP.
      * Cette méthode itère sur un nombre défini de fourmis pour construire des chemins, puis exécute
      * l'algorithme GA sur les chemins sélectionnés, suivi de l'algorithme SA pour améliorer la solution finale.
      * Enfin, elle évalue la solution finale à l'aide de la fonction d'évaluation.
-     *//*
+
+*//*
+
 
     @Override
     public void loop() {
@@ -97,7 +105,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         evaluation.evaluate(finalSolution);
     }
 
-    */
+*/
 /**
      * Met à jour les phéromones en fonction des chemins parcourus par les fourmis.
      * Ce processus implique l'évaporation des phéromones existantes et l'ajout de nouvelles phéromones
@@ -105,6 +113,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
      *
      * @param antPaths La liste des chemins parcourus par les fourmis.
      *//*
+
 
     private void updatePheromones(List<Path> antPaths) {
         // Évaporation
@@ -129,7 +138,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         }
     }
 
-    */
+*/
 /**
      * Calcule la distance entre deux villes spécifiées.
      *
@@ -138,13 +147,14 @@ public class CombinedACO_GA_SA extends CompetitorProject {
      * @return La distance entre les deux villes.
      *//*
 
+
     private double calculateDistance(int city1, int city2) {
         Coordinates c1 = problem.getCoordinates(city1);
         Coordinates c2 = problem.getCoordinates(city2);
         return c1.distance(c2);
     }
 
-    */
+*/
 /**
      * Calcule l'heuristique entre deux villes spécifiées.
      *
@@ -153,12 +163,13 @@ public class CombinedACO_GA_SA extends CompetitorProject {
      * @return L'heuristique entre les deux villes.
      *//*
 
+
     private double calculateHeuristic(int city1, int city2) {
         // Vous pouvez choisir une heuristique appropriée ici, par exemple, 1/distance
         return 1.0 / calculateDistance(city1, city2);
     }
 
-    */
+*/
 /**
      * Sélectionne la prochaine ville à visiter pour une fourmi spécifique, en utilisant un processus de sélection de la roulette.
      *
@@ -166,6 +177,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
      * @param visited     Un tableau de booléens indiquant les villes déjà visitées.
      * @return L'index de la prochaine ville à visiter.
      *//*
+
 
     private int selectNextCity(int currentCity, boolean[] visited) {
         double[] probabilities = new double[length];
@@ -195,12 +207,13 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         return -1; // Ne devrait pas se produire
     }
 
-    */
+*/
 /**
      * Construit le chemin parcouru par une fourmi, en utilisant l'algorithme de sélection de la prochaine ville basé sur la roulette.
      *
      * @return Le chemin parcouru par la fourmi.
-     *//*
+   *//*
+
 
     private Path constructAntPath() {
         boolean[] visited = new boolean[length];
@@ -242,13 +255,16 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         return new Path(path);
     }
 
-    */
-/**
+*/
+/*
+*
      * Applique l'algorithme de Hill Climbing pour générer une solution initiale.
      *
      * @param length La longueur du chemin à générer.
      * @return Un chemin généré par l'algorithme de Hill Climbing.
-     *//*
+
+*//*
+
 
     public Path HillClimbing(int length) {
         int[] path = new int[length];
@@ -277,13 +293,16 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         return new Path(path);
     }
 
-    */
-/**
+*/
+/*
+*
      * Génère une population initiale pour l'algorithme génétique (GA).
      *
      * @param populationSize La taille de la population à générer.
      * @return Une liste de chemins, représentant la population initiale.
-     *//*
+
+*//*
+
 
     public ArrayList<Path> generateInitialPopulation(int populationSize) {
         ArrayList<Path> population = new ArrayList<>();
@@ -294,13 +313,16 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         return population;
     }
 
-    */
-/**
+*/
+/*
+*
      * Applique l'opérateur d'amélioration 2-opt sur un chemin spécifié.
      *
      * @param P Le chemin sur lequel appliquer l'opérateur 2-opt.
      * @return Le chemin résultant après l'application de l'opérateur 2-opt.
-     *//*
+
+*//*
+
 
     public Path two_opt(Path P) {
         Path S = new Path(P);
@@ -352,7 +374,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         return S;
     }
 
-    */
+*/
 /**
      * Effectue la sélection des individus pour la prochaine génération à l'aide du tournoi.
      *
@@ -360,6 +382,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
      * @param populationSize La taille de la population.
      * @return Une nouvelle population sélectionnée pour la prochaine génération.
      *//*
+
 
     public ArrayList<Path> selection(ArrayList<Path> population, int populationSize) {
         ArrayList<Path> newPopulation = new ArrayList<>();
@@ -373,13 +396,14 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         return newPopulation;
     }
 
-    */
+*/
 /**
      * Sélectionne un individu à partir de la population donnée pour le tournoi.
      *
      * @param population La population parmi laquelle choisir un individu pour le tournoi.
      * @return Le chemin sélectionné pour le tournoi.
-     *//*
+    *//*
+
 
     private Path tournamentSelection(ArrayList<Path> population) {
         int tournamentSize = 2;
@@ -398,7 +422,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         return bestPath;
     }
 
-    */
+*/
 /**
      * Effectue l'opérateur de croisement sur deux chemins donnés.
      *
@@ -406,6 +430,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
      * @param P2 Le deuxième chemin pour le croisement.
      * @return Le chemin résultant du croisement des deux chemins donnés.
      *//*
+
 
     private Path crossover(Path P1, Path P2) {
         int crossoverPoint = random.nextInt(length - 1) + 1; // Choix d'un point de croisement aléatoire
@@ -434,7 +459,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         return new Path(childPath);
     }
 
-    */
+*/
 /**
      * Applique l'opérateur de mutation sur une population donnée avec une probabilité donnée.
      *
@@ -442,6 +467,7 @@ public class CombinedACO_GA_SA extends CompetitorProject {
      * @param mutationRate Le taux de mutation.
      * @return La population résultant de l'application de l'opérateur de mutation.
      *//*
+
 
     public ArrayList<Path> mutation(ArrayList<Path> population, double mutationRate) {
         for (Path path : population) {
@@ -456,13 +482,14 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         return population;
     }
 
-    */
+*/
 /**
      * Applique l'algorithme du recuit simulé (SA) pour optimiser une solution initiale.
      *
      * @param initialSolution La solution initiale à optimiser.
      * @return La solution optimisée.
      *//*
+
 
     public Path simulatedAnnealing(Path initialSolution) {
         Path currentSolution = initialSolution;
@@ -483,13 +510,14 @@ public class CombinedACO_GA_SA extends CompetitorProject {
         return currentSolution;
     }
 
-    */
+*/
 /**
      * Génère un voisin de la solution donnée en effectuant un simple échange de villes.
      *
      * @param solution La solution actuelle.
      * @return Un voisin de la solution actuelle.
      *//*
+
 
     private Path getNeighbor(Path solution) {
         int index1 = random.nextInt(length);
@@ -503,4 +531,5 @@ public class CombinedACO_GA_SA extends CompetitorProject {
 
         return new Path(newPath);
     }
-}*/
+}
+*/
