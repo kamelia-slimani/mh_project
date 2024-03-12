@@ -20,14 +20,14 @@ public class BakiTKO extends CompetitorProject {
     ArrayList<Path> population = new ArrayList<Path>(); // Population de chemins
 
     /**
-     * Constructeur de la classe Genetic.
+     * Constructeur de la classe BakiTKO.
      *
      * @param evaluation L'instance de l'évaluation
      * @throws InvalidProjectException Si le projet est invalide
      */
     public BakiTKO(Evaluation evaluation) throws InvalidProjectException {
         super(evaluation);
-        setMethodName("GENETIC");
+        setMethodName("BakiTKO");
         setAuthors("Alexandre Untereiner", "Kamelia Slimani");
     }
 

@@ -36,7 +36,7 @@ public class DoumbeEstropier extends CompetitorProject {
 
 */
 /**
-     * Construit un nouvel objet CombinedACO_GA_SA avec la fonction d'évaluation spécifiée.
+     * Construit un nouvel objet DoumbeEstropier avec la fonction d'évaluation spécifiée.
      *
      * @param evaluation La fonction d'évaluation pour le problème TSP.
      * @throws InvalidProjectException Si l'initialisation du projet échoue.
@@ -45,7 +45,7 @@ public class DoumbeEstropier extends CompetitorProject {
 
     public DoumbeEstropier(Evaluation evaluation) throws InvalidProjectException {
         super(evaluation);
-        setMethodName("COMBINED_ACO_GA_SA");
+        setMethodName("DoumbeEstropier");
         setAuthors("Alexandre", "Kamelia");
     }
 
