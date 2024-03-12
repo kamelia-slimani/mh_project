@@ -296,7 +296,7 @@ public class BakiTKO extends CompetitorProject {
         int n = index1, m = index2;
         int length = (index2 - index1 + 1) / 2;
 
-        // Si index1 est plus grand que index2, ajustez la longueur en conséquence
+        // Si index1 est plus grand que index2, ajustez la longueur
         if (index1 > index2) {
             length = ((this.length - index1) + index2 + 1) / 2;
         }
@@ -318,6 +318,7 @@ public class BakiTKO extends CompetitorProject {
 
     /**
      * Applique l'opérateur de mutation Shift sur le chemin P.
+     * Rend deux villes voisines
      *
      * @param P Le chemin sur lequel appliquer l'opérateur de mutation Shift
      */
@@ -344,7 +345,7 @@ public class BakiTKO extends CompetitorProject {
         int n = index1;
         int length = (index2 - index1);
 
-        // Si index1 est plus grand que index2, ajustez la longueur en conséquence
+        // Si index1 est plus grand que index2, ajustez la longueur
         if (index1 > index2) {
             length = ((this.length - index1) + index2);
         }
@@ -404,7 +405,7 @@ public class BakiTKO extends CompetitorProject {
 
     /**
      * Applique l'opérateur de mutation Change sur le chemin P.
-     *
+     * Echange 2 villes
      * @param P Le chemin sur lequel appliquer l'opérateur de mutation Change
      */
     void MutationChange(Path P) {

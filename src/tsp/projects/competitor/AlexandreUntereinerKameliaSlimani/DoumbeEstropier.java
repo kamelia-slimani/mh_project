@@ -100,7 +100,7 @@ public class DoumbeEstropier extends CompetitorProject {
         Path gaSolution = population.get(0); // Sélectionne le meilleur chemin de la population finale
 
         // Exécute l'algorithme SA sur la solution GA ou le meilleur chemin des fourmis
-        Path finalSolution = simulatedAnnealing(gaSolution); // Vous pouvez choisir la solution de départ ici
+        Path finalSolution = simulatedAnnealing(gaSolution);
 
         evaluation.evaluate(finalSolution);
     }
@@ -165,7 +165,7 @@ public class DoumbeEstropier extends CompetitorProject {
 
 
     private double calculateHeuristic(int city1, int city2) {
-        // Vous pouvez choisir une heuristique appropriée ici, par exemple, 1/distance
+
         return 1.0 / calculateDistance(city1, city2);
     }
 
