@@ -258,15 +258,15 @@ public class DoumbeEstropier extends CompetitorProject {
 */
 /*
 *
-     * Applique l'algorithme de Hill Climbing pour générer une solution initiale.
+     * Applique l'algorithme de Greedy pour générer une solution initiale.
      *
      * @param length La longueur du chemin à générer.
-     * @return Un chemin généré par l'algorithme de Hill Climbing.
+     * @return Un chemin généré par l'algorithme de Greedy.
 
 *//*
 
 
-    public Path HillClimbing(int length) {
+    public Path Greedy(int length) {
         int[] path = new int[length];
         boolean[] used = new boolean[length];
         int init = this.random.nextInt(length);
@@ -307,7 +307,7 @@ public class DoumbeEstropier extends CompetitorProject {
     public ArrayList<Path> generateInitialPopulation(int populationSize) {
         ArrayList<Path> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
-            Path path = two_opt(HillClimbing(this.length));
+            Path path = two_opt(Greedy(this.length));
             population.add(path);
         }
         return population;
